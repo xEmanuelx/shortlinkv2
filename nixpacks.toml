@@ -1,0 +1,31 @@
+[phases.setup]
+nixPkgs = [
+  "php82",
+  "php82Extensions.intl",
+  "php82Extensions.zip",
+  "php82Extensions.pdo_mysql",
+  "php82Extensions.pdo_pgsql",
+  "php82Extensions.redis",
+  "composer",
+  "nodejs_20"
+]
+
+[phases.install]
+commands = [
+  "composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader"
+]
+
+[phases.build]
+commands = [
+  "php artisan key:generate --force || true",
+  "mkdir -p database && touch database/database.sqlite",
+  "php artisan migrate --force || true",
+  "php artisan db:seed --force || true",
+  "php artisan storage:link || true",
+  "php artisan config:cache || true",
+  "php artisan route:cache || true",
+  "php artisan view:cache || true"
+]
+
+[start]
+cmd = "php -S 0.0.0.0:$PORT -t public"
